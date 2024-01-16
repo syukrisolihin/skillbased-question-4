@@ -1,0 +1,39 @@
+import socket
+import threading
+import random
+
+# List of quotes
+quotes = [
+    "Winners never quit and quitters never win - Vince Lombardi",
+    "Don't wait for opportunity, Create it - Bernard shaw",
+    "A Winner is a Dreamer who never gives up - Nelson Mandela",
+    "Day 1 is better than 1 Day",
+    "It always seems impossible until it's done - Nelson Mandela"
+]
+
+def handle_client(client_socket):
+    # Send a random quote to the client
+    random_quote = random.choice(quotes)
+    client_socket.send(random_quote.encode())
+    client_socket.close()
+
+def main():
+    server_host = '192.168.66.128'
+    server_port = 8484
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((server_host, server_port))
+    server_socket.listen(5)
+
+    print(f"QOTD Server listening on {server_host}:{server_port}...")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Connection accepted from {client_address}")
+
+        # Create a new thread for each client
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.start()
+
+if __name__ == "__main__":
+    main()
